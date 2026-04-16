@@ -17,8 +17,7 @@ const Home = () => {
   
   const [heroIndex, setHeroIndex] = useState(0);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
-  const [windowSize, setWindowSize] = useState({ width: 1000, height: 800 });
+  const [spot, setSpot] = useState({ x: 50, y: 50 });
   
   // Parallax scroll effects
   const { scrollY } = useScroll();
@@ -35,19 +34,18 @@ const Home = () => {
   // Get new arrivals - first 4 products
   const newArrivals = products.slice(0, 4);
 
-  // Handle window resize for particles
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-      
-      const handleResize = () => {
-        setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-      };
-      
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
-  }, []);
+  // Handle mouse move for spotlight effect (smooth follow)
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    // Smooth follow with easing
+    setSpot(prev => ({
+      x: prev.x + (x - prev.x) * 0.15,
+      y: prev.y + (y - prev.y) * 0.15
+    }));
+  };
 
   // Auto-rotate hero images
   useEffect(() => {
@@ -59,7 +57,6 @@ const Home = () => {
   }, [heroImages.length]);
 
   // Show popup after 20 seconds only if user is NOT logged in
-  // Popup shows on EVERY page load after 20 seconds (no sessionStorage blocking)
   useEffect(() => {
     // Don't show popup if user is already logged in
     if (user) return;
@@ -70,14 +67,6 @@ const Home = () => {
 
     return () => clearTimeout(timer);
   }, [user]);
-
-  // Handle mouse movement for 3D tilt effect
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const { innerWidth, innerHeight } = window;
-    const x = (e.clientX / innerWidth - 0.5) * 20; // horizontal tilt
-    const y = (e.clientY / innerHeight - 0.5) * 20; // vertical tilt
-    setMouse({ x, y });
-  };
 
   if (productsLoading || categoriesLoading || heroLoading) {
     return (
@@ -109,20 +98,18 @@ const Home = () => {
 
   return (
     <div className="flex flex-col gap-24 pb-20">
-      {/* Hero Section with Parallax Effect & 3D Mouse Tilt */}
+      {/* Hero Section with Parallax Effect + Spotlight */}
       <section 
         onMouseMove={handleMouseMove}
         className="relative h-[85vh] lg:h-[90vh] overflow-hidden"
       >
-        <div className="absolute inset-0 perspective-[1000px]">
+        <div className="absolute inset-0">
           <motion.img
             src={currentHero.image_url}
             alt={currentHero.title}
             style={{
               y,
               scale,
-              rotateX: -mouse.y,
-              rotateY: mouse.x,
             }}
             transition={{ type: "spring", stiffness: 50, damping: 20 }}
             className="w-full h-full object-cover object-center will-change-transform"
@@ -132,11 +119,11 @@ const Home = () => {
             className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"
           />
           
-          {/* Light Reflection Effect - follows mouse cursor */}
+          {/* Spotlight Effect - follows mouse with smooth animation */}
           <motion.div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: `radial-gradient(circle at ${50 + mouse.x * 2}% ${50 + mouse.y * 2}%, rgba(255,255,255,0.15), transparent 40%)`
+              background: `radial-gradient(circle at ${spot.x}% ${spot.y}%, rgba(255,255,255,0.18), transparent 35%)`
             }}
           />
         </div>
@@ -146,7 +133,7 @@ const Home = () => {
             key={heroIndex} 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
-            style={{ y: textY, x: mouse.x * 0.5 }}
+            style={{ y: textY }}
             className="text-gold font-bold uppercase tracking-[0.3em] text-sm mb-4"
           >
             {config?.hero_badge || 'Spring Collection 2026'}
@@ -156,7 +143,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.1 }} 
-            style={{ y: textY, x: mouse.x * 0.5 }}
+            style={{ y: textY }}
             className="text-5xl lg:text-7xl font-heading font-bold mb-6 max-w-2xl leading-tight"
           >
             {currentHero.title}
@@ -166,7 +153,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.2 }} 
-            style={{ y: textY, x: mouse.x * 0.5 }}
+            style={{ y: textY }}
             className="text-base text-gray-200 mb-8 max-w-xl"
           >
             {currentHero.subtitle}
@@ -175,7 +162,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.3 }}
-            style={{ y: textY, x: mouse.x * 0.5 }}
+            style={{ y: textY }}
           >
             <Link to={currentHero.cta_link} className="btn-primary flex items-center gap-2 group">
               {currentHero.cta_text} <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -190,30 +177,6 @@ const Home = () => {
               key={idx} 
               onClick={() => setHeroIndex(idx)} 
               className={`w-2 h-2 rounded-full transition-all duration-300 ${heroIndex === idx ? 'w-8 bg-gold' : 'bg-white/50'}`} 
-            />
-          ))}
-        </div>
-
-        {/* Floating Particles Effect */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-white/40 rounded-full"
-              initial={{
-                x: Math.random() * (typeof window !== "undefined" ? window.innerWidth : 1000),
-                y: Math.random() * (typeof window !== "undefined" ? window.innerHeight : 800),
-                opacity: 0
-              }}
-              animate={{
-                y: [null, -100],
-                opacity: [0, 1, 0]
-              }}
-              transition={{
-                duration: 5 + Math.random() * 5,
-                repeat: Infinity,
-                delay: Math.random() * 5
-              }}
             />
           ))}
         </div>
