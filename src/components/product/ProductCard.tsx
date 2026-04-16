@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 import { Product } from '../../types';
 import { formatPrice, cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
-import { useCart } from '../../context/CartContext';
-import { useWishlist } from '../../context/WishlistContext';
+import { useCart } from '../../Context/CartContext';
+import { useWishlist } from '../../Context/WishlistContext';
 import { Toast } from '../ui/Toast';
 
 interface ProductCardProps {

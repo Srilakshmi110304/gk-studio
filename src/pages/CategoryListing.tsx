@@ -3,7 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProducts, useCategories } from '../components/hooks/useData';
 import ProductCard from '../components/product/ProductCard';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../Context/CartContext';
 import { Toast } from '../components/ui/Toast';
 import { ChevronRight, Filter, X, ShoppingBag } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -94,7 +94,11 @@ const CategoryListing = () => {
       case 'price-desc':
         return productsCopy.sort((a, b) => (b.offerPrice || b.price) - (a.offerPrice || a.price));
       case 'newest':
-        return productsCopy.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  return productsCopy.sort((a, b) => {
+    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return dateB - dateA;
+  });
       case 'popularity':
         return productsCopy.sort((a, b) => (b.rating || 0) - (a.rating || 0));
       default:

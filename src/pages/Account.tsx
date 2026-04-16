@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { User, MapPin, Lock, ShoppingBag, Heart, ChevronRight, Edit2, Trash2, Plus, ArrowRight, LogOut } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useWishlist } from '../context/WishlistContext';
-import { useAuth } from '../context/AuthContext';
-import { useOrders } from '../context/OrdersContext';
+import { useWishlist } from '../Context/WishlistContext';
+import { useAuth } from '../Context/AuthContext';
+import { useOrders } from '../Context/OrdersContext';
 import { formatPrice } from '../lib/utils';
 import { supabase } from '../lib/supabase';
 
