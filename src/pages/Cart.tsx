@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { formatPrice } from '../lib/utils';
 import { Trash2, ShoppingBag, ArrowRight, Plus, Minus } from 'lucide-react';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../Context/CartContext';
 
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, getCartTotal, loading } = useCart();
