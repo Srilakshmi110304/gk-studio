@@ -5,8 +5,8 @@ import { useProducts } from '../components/hooks/useData';
 import { formatPrice, cn } from '../lib/utils';
 import { Star, Heart, ShoppingBag, Zap, ChevronRight, Truck, RotateCcw, ShieldCheck, ChevronDown } from 'lucide-react';
 import ProductCard from '../components/product/ProductCard';
-import { useCart } from '../context/CartContext';
-import { useWishlist } from '../context/WishlistContext';
+import { useCart } from '../Context/CartContext';
+import { useWishlist } from '../Context/WishlistContext';
 import { Toast } from '../components/ui/Toast';
 
 const ProductDetail = () => {
