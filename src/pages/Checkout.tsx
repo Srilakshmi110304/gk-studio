@@ -4,9 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { formatPrice } from '../lib/utils';
 import { ChevronRight, MapPin, Truck, CreditCard, CheckCircle2, Plus } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
-import { useOrders } from '../context/OrdersContext';
+import { useCart } from '../Context/CartContext';
+import { useAuth } from '../Context/AuthContext';
+import { useOrders } from '../Context/OrdersContext';
 import { supabase, Tables } from '../lib/supabase';
 
 interface Address {

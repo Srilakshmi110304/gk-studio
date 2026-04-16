@@ -70,19 +70,32 @@ const CategoryListing = () => {
     setPriceRange(10000);
   };
 
+  // Helper function to safely get date timestamp
+  const getSafeDate = (dateValue?: string | Date): number => {
+    if (!dateValue) return 0;
+    try {
+      const date = new Date(dateValue);
+      return isNaN(date.getTime()) ? 0 : date.getTime();
+    } catch {
+      return 0;
+    }
+  };
+
   // Apply filters first
-  const filteredByFilters = categoryProducts.filter(product => {
-    if (selectedSubCategories.length > 0 && !selectedSubCategories.includes(product.subCategory)) {
-      return false;
-    }
-    if (selectedCollections.length > 0 && !selectedCollections.includes(product.collection)) {
-      return false;
-    }
-    if (product.offerPrice > priceRange) {
-      return false;
-    }
-    return true;
-  });
+  const filteredByFilters = useMemo(() => {
+    return categoryProducts.filter(product => {
+      if (selectedSubCategories.length > 0 && !selectedSubCategories.includes(product.subCategory)) {
+        return false;
+      }
+      if (selectedCollections.length > 0 && !selectedCollections.includes(product.collection)) {
+        return false;
+      }
+      if (product.offerPrice > priceRange) {
+        return false;
+      }
+      return true;
+    });
+  }, [categoryProducts, selectedSubCategories, selectedCollections, priceRange]);
 
   // Then apply sorting
   const filteredProducts = useMemo(() => {
@@ -94,11 +107,11 @@ const CategoryListing = () => {
       case 'price-desc':
         return productsCopy.sort((a, b) => (b.offerPrice || b.price) - (a.offerPrice || a.price));
       case 'newest':
-  return productsCopy.sort((a, b) => {
-    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-    return dateB - dateA;
-  });
+        return productsCopy.sort((a, b) => {
+          const dateA = getSafeDate(a.createdAt);
+          const dateB = getSafeDate(b.createdAt);
+          return dateB - dateA;
+        });
       case 'popularity':
         return productsCopy.sort((a, b) => (b.rating || 0) - (a.rating || 0));
       default:
