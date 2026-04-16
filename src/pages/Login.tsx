@@ -1,7 +1,7 @@
 // pages/Login.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../Context/AuthContext'; 
 import { Mail, ArrowRight, ChevronLeft, KeyRound, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 

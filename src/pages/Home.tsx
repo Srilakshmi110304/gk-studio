@@ -5,7 +5,7 @@ import { ChevronRight, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/product/ProductCard';
 import { useProducts, useCategories, useHeroImages, useSiteConfig } from '../components/hooks/useData';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../Context/AuthContext'; 
 import Login from './Login';
 
 const Home = () => {

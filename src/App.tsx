@@ -1,10 +1,10 @@
 // App.tsx - Make sure the order is correct
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
-import { WishlistProvider } from './context/WishlistContext';
-import { OrdersProvider } from './context/OrdersContext';
+import { AuthProvider } from "./Context/AuthContext";
+import { CartProvider } from './Context/CartContext';
+import { WishlistProvider } from './Context/WishlistContext';
+import { OrdersProvider } from './Context/OrdersContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Home from './pages/Home';

@@ -4,8 +4,8 @@ import { Search, Heart, ShoppingBag, User, Menu, X, ChevronDown } from 'lucide-r
 import { Link } from 'react-router-dom';
 import TrustBar from './TrustBar';
 import { motion, AnimatePresence } from 'motion/react';
-import { useCart } from '../../context/CartContext';
-import { useWishlist } from '../../context/WishlistContext';
+import { useCart } from '../../Context/CartContext'; 
+import { useWishlist } from '../../Context/WishlistContext'; 
 import { useNavbar } from '../hooks/useNavbar';
 
 const Navbar = () => {
