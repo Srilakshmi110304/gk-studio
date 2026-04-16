@@ -2,8 +2,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
-import { useWishlist } from '../context/WishlistContext';
-import { useCart } from '../context/CartContext';
+import { useWishlist } from '../Context/WishlistContext';
+import { useCart } from '../Context/CartContext';
 import { formatPrice } from '../lib/utils';
 import { Toast } from '../components/ui/Toast';
 import ProductCard from '../components/product/ProductCard';
