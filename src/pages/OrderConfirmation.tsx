@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { CheckCircle2, Package, Truck, Clock } from 'lucide-react';
-import { useOrders } from '../context/OrdersContext';
+import { useOrders } from '../Context/OrdersContext';
 import { formatPrice } from '../lib/utils';
 
 const OrderConfirmation = () => {
