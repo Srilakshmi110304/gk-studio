@@ -15,17 +15,18 @@ const StoreLocator = () => {
         Our Store - Bangalore
       </motion.h1>
 
-      {/* Image with animation */}
+      {/* Image with overlay and zoom */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
-        className="max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-xl"
+        className="max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-xl relative group"
       >
+        <div className="absolute inset-0 bg-black/20 z-10"></div>
         <img 
           src="https://images.unsplash.com/photo-1597047084897-51e81819a499?q=80&w=1600"
           alt="Bangalore Store"
-          className="w-full h-[400px] object-cover"
+          className="w-full h-[400px] object-cover group-hover:scale-105 transition duration-500"
         />
       </motion.div>
 
@@ -68,7 +69,7 @@ const StoreLocator = () => {
       >
         <a 
           href="/" 
-          className="inline-flex items-center gap-2 px-6 py-3 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition shadow-md"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-full hover:shadow-lg transition-all hover:scale-105"
         >
           Back to Home
         </a>

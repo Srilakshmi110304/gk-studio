@@ -6,7 +6,7 @@
   --font-heading: "Cormorant Garamond", serif;
   --font-sans: "DM Sans", sans-serif;
 
-  --color-primary: #D44C6F;      /* Vibrant Pink (replaced navy) */
+  --color-primary: #D44C6F;      /* Vibrant Pink */
   --color-accent: #B8860B;       /* Dark Gold */
   --color-gold: #B8860B;
   --color-page-bg: #F9F7F5;
@@ -38,21 +38,62 @@
     color: var(--color-primary);
   }
 
-  /* Headings editorial feel */
   h1 {
     font-size: 3rem;
     line-height: 1.2;
     letter-spacing: -0.01em;
+    margin-bottom: 0.5em;
   }
 
   h2 {
     font-size: 2rem;
     line-height: 1.3;
+    margin-bottom: 0.5em;
   }
 
-  /* Uppercase elements get tracking */
+  p {
+    line-height: 1.6;
+  }
+
   .uppercase, .btn-primary, .btn-secondary, .badge, .nav-link {
     letter-spacing: 1px;
+  }
+
+  * {
+    scroll-behavior: smooth;
+  }
+
+  button {
+    transition: all 0.25s ease;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    transform: translateY(-1px);
+  }
+  
+  button:active {
+    transform: scale(0.98);
+  }
+
+  img {
+    transition: all 0.4s ease;
+  }
+
+  *:focus-visible {
+    outline: 2px solid #ec4899;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    opacity: 0.5;
+  }
+
+  input[type="number"]:hover::-webkit-inner-spin-button,
+  input[type="number"]:hover::-webkit-outer-spin-button {
+    opacity: 1;
   }
 }
 
@@ -64,8 +105,11 @@
   }
   .btn-primary:hover {
     background: #9a6e08;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(212, 76, 111, 0.4);
+  }
+  .btn-primary:active {
+    transform: scale(0.98);
   }
 
   .btn-secondary {
@@ -78,13 +122,16 @@
     background: var(--color-primary);
     color: white;
     border-color: var(--color-primary);
+    transform: translateY(-2px);
+  }
+  .btn-secondary:active {
+    transform: scale(0.98);
   }
 
   .container-custom {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
-  /* Product card shadow */
   .product-card-shadow {
     box-shadow: var(--shadow-card);
     transition: box-shadow 0.3s ease, transform 0.3s ease;
@@ -93,4 +140,146 @@
     box-shadow: var(--shadow-hover);
     transform: translateY(-2px);
   }
+}
+
+/* Shimmer Loading Animation */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e8e8e8 37%,
+    #f0f0f0 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+/* Glass Card Effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Custom scrollbar for premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #ec4899, #f43f5e);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #db2777, #e11d48);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ec4899 #f1f1f1;
+}
+
+/* Loading animation improvements */
+@keyframes shimmerOld {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Utility classes for animations */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce-custom {
+  animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #D44C6F 0%, #B8860B 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Hover scale utility */
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* Smooth image zoom */
+.image-zoom {
+  overflow: hidden;
+}
+
+.image-zoom img {
+  transition: transform 0.7s ease;
+}
+
+.image-zoom:hover img {
+  transform: scale(1.1);
+}
+
+/* Image fade-in */
+.image-fade-in {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.image-fade-in.loaded {
+  opacity: 1;
 }

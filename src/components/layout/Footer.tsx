@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <footer className="bg-primary text-white pt-20 pb-8 relative overflow-hidden">
+      {/* Glow line */}
+      <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-pink-400 via-white to-pink-400 blur-sm" />
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-200 via-white to-pink-200" />
       <div className="container-custom">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
@@ -30,7 +32,7 @@ const Footer = () => {
             <h4 className="font-heading text-xl font-bold mb-6 text-white tracking-wide">Shop By Category</h4>
             <ul className="space-y-3 text-sm text-gray-200">
               {['Necklaces', 'Earrings', 'Bangles & Bracelets', 'Accessories', '92.5 Silver Collection', 'Ortho Footwear'].map(cat => (
-                <li key={cat}><Link to={`/category/${cat.toLowerCase().replace(/\s/g, '-')}`} className="hover:text-pink-200 transition-colors">{cat}</Link></li>
+                <li key={cat}><Link to={`/category/${cat.toLowerCase().replace(/\s/g, '-')}`} className="hover:text-pink-300 transition duration-200">{cat}</Link></li>
               ))}
             </ul>
           </div>
@@ -39,7 +41,7 @@ const Footer = () => {
             <h4 className="font-heading text-xl font-bold mb-6 text-white tracking-wide">Customer Service</h4>
             <ul className="space-y-3 text-sm text-gray-200">
               {['Track Your Order', 'Shipping & Delivery', 'Returns & Exchanges', 'FAQs', 'Store Locator', 'Contact Us'].map(item => (
-                <li key={item}><Link to="#" className="hover:text-pink-200 transition-colors">{item}</Link></li>
+                <li key={item}><Link to="#" className="hover:text-pink-300 transition duration-200">{item}</Link></li>
               ))}
             </ul>
           </div>
@@ -47,9 +49,9 @@ const Footer = () => {
           <div>
             <h4 className="font-heading text-xl font-bold mb-6 text-white tracking-wide">Get In Touch</h4>
             <ul className="space-y-4 text-sm text-gray-200">
-              <li className="flex items-start gap-3"><MapPin size={20} className="text-pink-200 shrink-0" /><span>123, Jewellery Lane, Gold Bazaar, Mumbai - 400001</span></li>
-              <li className="flex items-center gap-3"><Phone size={20} className="text-pink-200 shrink-0" /><span>+91 98765 43210</span></li>
-              <li className="flex items-center gap-3"><Mail size={20} className="text-pink-200 shrink-0" /><span>support@gkstudio.com</span></li>
+              <li className="flex items-start gap-3 group"><MapPin size={20} className="text-pink-200 shrink-0 group-hover:scale-110 transition" /><span>123, Jewellery Lane, Gold Bazaar, Mumbai - 400001</span></li>
+              <li className="flex items-center gap-3 group"><Phone size={20} className="text-pink-200 shrink-0 group-hover:scale-110 transition" /><span>+91 98765 43210</span></li>
+              <li className="flex items-center gap-3 group"><Mail size={20} className="text-pink-200 shrink-0 group-hover:scale-110 transition" /><span>support@gkstudio.com</span></li>
             </ul>
           </div>
         </div>
@@ -57,8 +59,8 @@ const Footer = () => {
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-200 uppercase tracking-widest">
           <p>© 2026 GK Studio. All Rights Reserved.</p>
           <div className="flex gap-6">
-            <Link to="/privacy" className="hover:text-pink-200 transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-pink-200 transition-colors">Terms of Service</Link>
+            <Link to="/privacy" className="hover:text-pink-300 transition duration-200">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-pink-300 transition duration-200">Terms of Service</Link>
           </div>
         </div>
       </div>

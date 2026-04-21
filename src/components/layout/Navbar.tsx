@@ -19,7 +19,7 @@ const Navbar = () => {
     return (
       <header className="sticky top-0 z-50 w-full shadow-lg">
         <TrustBar />
-        <div className="bg-white border-b shadow-sm">
+        <div className="bg-white/80 backdrop-blur-md border-b shadow-sm">
           <div className="container-custom h-24 flex items-center justify-between gap-10">
             <div className="w-24 h-8 bg-gray-200 animate-pulse rounded"></div>
             <div className="w-48 h-8 bg-gray-200 animate-pulse rounded"></div>
@@ -37,8 +37,8 @@ const Navbar = () => {
       {/* Trust Bar FIRST - Above Navbar */}
       <TrustBar />
 
-      {/* Navbar */}
-      <div className="bg-white border-b shadow-sm">
+      {/* Navbar with Glassmorphism */}
+      <div className="bg-white/80 backdrop-blur-md border-b shadow-sm transition-all duration-300">
         <div className="container-custom h-24 flex items-center justify-between gap-10">
           <button 
             className="lg:hidden p-2 rounded-full hover:bg-gray-100 transition"
@@ -48,8 +48,8 @@ const Navbar = () => {
           </button>
 
           {/* Logo with Subtitle - Premium Layout */}
-          <Link to="/" className="flex flex-col leading-tight">
-            <span className="text-2xl font-heading font-semibold tracking-wide text-gray-900 whitespace-nowrap">
+          <Link to="/" className="flex flex-col leading-tight group">
+            <span className="text-2xl font-heading font-semibold tracking-wide text-gray-900 whitespace-nowrap group-hover:text-pink-500 transition-colors">
               {navbar?.logo_text || "GK STUDIO"}
             </span>
             <span className="text-[10px] tracking-[0.25em] uppercase text-gray-500">
@@ -69,10 +69,10 @@ const Navbar = () => {
               >
                 <Link 
                   to={`/category/${item.slug}`}
-                  className="text-sm font-semibold text-gray-700 hover:text-black transition-colors flex items-center gap-1 tracking-wide relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-pink-500 after:transition-all hover:after:w-full"
+                  className="relative text-sm font-semibold text-gray-700 hover:text-black transition-colors after:absolute after:bottom-[-6px] after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[2px] after:bg-pink-500 after:transition-all hover:after:w-full"
                 >
                   {item.name}
-                  {item.mega_menu && <ChevronDown size={14} className="opacity-70" />}
+                  {item.mega_menu && <ChevronDown size={14} className="opacity-70 ml-1" />}
                 </Link>
               </div>
             ))}
@@ -91,7 +91,7 @@ const Navbar = () => {
                 <Heart size={22} strokeWidth={1.5} className="text-gray-500 group-hover:text-black transition" />
                 <span className="w-4 h-[2px] bg-pink-500 mt-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 {getWishlistCount() > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-md">
+                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-md">
                     {getWishlistCount()}
                   </span>
                 )}
@@ -112,7 +112,7 @@ const Navbar = () => {
                 <ShoppingBag size={22} strokeWidth={1.5} className="text-gray-500 group-hover:text-black transition" />
                 <span className="w-4 h-[2px] bg-pink-500 mt-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 {getCartCount() > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-md">
+                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-md">
                     {getCartCount()}
                   </span>
                 )}
@@ -129,7 +129,7 @@ const Navbar = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute top-full left-0 w-full bg-white shadow-2xl border-t border-pink-100 hidden lg:block"
+            className="absolute top-full left-0 w-full bg-white/95 backdrop-blur-md shadow-2xl border-t border-pink-100 hidden lg:block"
             onMouseEnter={() => setActiveMegaMenu(activeMegaMenu)}
             onMouseLeave={() => setActiveMegaMenu(null)}
           >
@@ -234,6 +234,13 @@ const Navbar = () => {
                     {item.name}
                   </Link>
                 ))}
+                <Link 
+                  to="/recently-viewed"
+                  className="block px-6 py-4 text-base font-medium text-gray-700 border-b border-gray-100 hover:bg-gray-50 transition"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Recently Viewed
+                </Link>
                 <Link 
                   to="/login"
                   className="block px-6 py-4 text-base font-medium text-gray-700 border-b border-gray-100 hover:bg-gray-50 transition"

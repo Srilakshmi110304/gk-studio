@@ -1,9 +1,10 @@
-// pages/Home.tsx
+// pages/Home.tsx (Complete with Recently Viewed - Fixed)
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { ChevronRight, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/product/ProductCard';
+import RecentlyViewed from '../components/product/RecentlyViewed';
 import { useProducts, useCategories, useHeroImages, useSiteConfig } from '../components/hooks/useData';
 import { useAuth } from '../Context/AuthContext'; 
 import Login from './Login';
@@ -19,35 +20,24 @@ const Home = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [spot, setSpot] = useState({ x: 50, y: 50 });
   
-  // Parallax scroll effects
   const { scrollY } = useScroll();
-  
-  // Image moves slower (parallax effect)
   const y = useTransform(scrollY, [0, 500], [0, 150]);
-  
-  // Optional: slight zoom effect
   const scale = useTransform(scrollY, [0, 500], [1, 1.1]);
-  
-  // Text moves opposite direction for depth
   const textY = useTransform(scrollY, [0, 500], [0, -50]);
   
-  // Get new arrivals - first 4 products
   const newArrivals = products.slice(0, 4);
 
-  // Handle mouse move for spotlight effect (smooth follow)
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     
-    // Smooth follow with easing
     setSpot(prev => ({
       x: prev.x + (x - prev.x) * 0.15,
       y: prev.y + (y - prev.y) * 0.15
     }));
   };
 
-  // Auto-rotate hero images
   useEffect(() => {
     if (heroImages.length === 0) return;
     const interval = setInterval(() => {
@@ -56,26 +46,22 @@ const Home = () => {
     return () => clearInterval(interval);
   }, [heroImages.length]);
 
-  // Show popup after 20 seconds only if user is NOT logged in
   useEffect(() => {
-    // Don't show popup if user is already logged in
     if (user) return;
-
     const timer = setTimeout(() => {
       setShowLoginPopup(true);
-    }, 20000); // 20 seconds
-
+    }, 20000);
     return () => clearTimeout(timer);
   }, [user]);
 
   if (productsLoading || categoriesLoading || heroLoading) {
     return (
       <div className="flex flex-col gap-24 pb-20">
-        <div className="relative h-[85vh] bg-gray-200 animate-pulse"></div>
+        <div className="relative h-[85vh] shimmer"></div>
         <div className="container-custom">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="aspect-square bg-gray-200 animate-pulse rounded-full"></div>
+              <div key={i} className="aspect-square shimmer rounded-full"></div>
             ))}
           </div>
         </div>
@@ -91,14 +77,18 @@ const Home = () => {
     cta_link: '/category/necklaces'
   };
 
-  // Helper function to get category products
   const getCategoryProducts = (categoryName: string) => {
     return products.filter(p => p.category === categoryName);
   };
 
+  // Create a floating animation for the Y position
+  const floatingYAnimation = {
+    y: [0, -10, 0]
+  };
+
   return (
     <div className="flex flex-col gap-24 pb-20">
-      {/* Hero Section with Parallax Effect + Spotlight */}
+      {/* Hero Section with Enhanced Animation */}
       <section 
         onMouseMove={handleMouseMove}
         className="relative h-[85vh] lg:h-[90vh] overflow-hidden"
@@ -107,10 +97,7 @@ const Home = () => {
           <motion.img
             src={currentHero.image_url}
             alt={currentHero.title}
-            style={{
-              y,
-              scale,
-            }}
+            style={{ y, scale }}
             transition={{ type: "spring", stiffness: 50, damping: 20 }}
             className="w-full h-full object-cover object-center will-change-transform"
           />
@@ -119,7 +106,6 @@ const Home = () => {
             className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"
           />
           
-          {/* Spotlight Effect - follows mouse with smooth animation */}
           <motion.div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -132,7 +118,8 @@ const Home = () => {
           <motion.span 
             key={heroIndex} 
             initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
             style={{ y: textY }}
             className="text-gold font-bold uppercase tracking-[0.3em] text-sm mb-4"
           >
@@ -164,19 +151,18 @@ const Home = () => {
             transition={{ delay: 0.3 }}
             style={{ y: textY }}
           >
-            <Link to={currentHero.cta_link} className="btn-primary flex items-center gap-2 group">
+            <Link to={currentHero.cta_link} className="btn-primary flex items-center gap-2 group hover:shadow-lg">
               {currentHero.cta_text} <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
         </div>
         
-        {/* Hero Indicators */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
           {heroImages.map((_, idx) => (
             <button 
               key={idx} 
               onClick={() => setHeroIndex(idx)} 
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${heroIndex === idx ? 'w-8 bg-gold' : 'bg-white/50'}`} 
+              className={`w-2 h-2 rounded-full transition-all duration-300 hover:scale-150 ${heroIndex === idx ? 'w-8 bg-gold' : 'bg-white/50'}`} 
             />
           ))}
         </div>
@@ -233,10 +219,9 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Category Strips - Only show featured categories that have products */}
+      {/* Category Strips */}
       {categories.filter(c => c.featured).map((category) => {
         const categoryProducts = getCategoryProducts(category.name);
-        // Get first 6 images from the category products
         const imagesToShow = categoryProducts.slice(0, 6).flatMap(p => p.images).slice(0, 6);
         
         if (imagesToShow.length === 0) return null;
@@ -276,29 +261,29 @@ const Home = () => {
             <p className="text-gray-300 mt-2">Get exclusive offers and faster checkout on our app.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-4">
-            <button className="bg-black/80 backdrop-blur-sm border border-white/20 px-6 py-3 rounded-xl flex items-center gap-3 hover:bg-black transition-colors">
+            <button className="bg-black/80 backdrop-blur-sm border border-white/20 px-6 py-3 rounded-xl flex items-center gap-3 hover:bg-black transition-colors hover:scale-105 active:scale-95">
               <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Play Store" className="h-8" />
             </button>
-            <button className="bg-black/80 backdrop-blur-sm border border-white/20 px-6 py-3 rounded-xl flex items-center gap-3 hover:bg-black transition-colors">
+            <button className="bg-black/80 backdrop-blur-sm border border-white/20 px-6 py-3 rounded-xl flex items-center gap-3 hover:bg-black transition-colors hover:scale-105 active:scale-95">
               <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" className="h-8" />
             </button>
           </div>
         </div>
       </section>
 
+      {/* Recently Viewed Section */}
+      <RecentlyViewed />
+
       {/* Login Popup Modal */}
       {showLoginPopup && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowLoginPopup(false)}>
-          <div className="bg-white rounded-2xl w-full max-w-md relative" onClick={e => e.stopPropagation()}>
-            {/* Close Button */}
+          <div className="bg-white rounded-2xl w-full max-w-md relative shadow-2xl" onClick={e => e.stopPropagation()}>
             <button
               onClick={() => setShowLoginPopup(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
             >
               ✕
             </button>
-            
-            {/* Reuse Login Component with isPopup prop */}
             <Login isPopup onClose={() => setShowLoginPopup(false)} />
           </div>
         </div>

@@ -1,6 +1,7 @@
 // pages/CategoryListing.tsx
 import React, { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion } from 'motion/react';
 import { useProducts, useCategories } from '../components/hooks/useData';
 import ProductCard from '../components/product/ProductCard';
 import { useCart } from '../Context/CartContext';
@@ -20,16 +21,11 @@ const CategoryListing = () => {
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [sortBy, setSortBy] = useState('newest');
 
-  // Find the category by slug
   const category = categories.find(c => c.slug === slug);
   
-  // Filter products by category with improved matching (case-insensitive and trimmed)
   const categoryProducts = useMemo(() => {
     if (!category) return [];
-    
-    // Normalize the category name from the data (trim and lowercase)
     const normalizedCategoryName = category.name.toLowerCase().trim();
-    
     return products.filter(p => {
       const productCategory = p.category?.toLowerCase().trim();
       return productCategory === normalizedCategoryName && p.isActive !== false;
@@ -70,7 +66,6 @@ const CategoryListing = () => {
     setPriceRange(10000);
   };
 
-  // Helper function to safely get date timestamp
   const getSafeDate = (dateValue?: string | Date): number => {
     if (!dateValue) return 0;
     try {
@@ -81,7 +76,6 @@ const CategoryListing = () => {
     }
   };
 
-  // Apply filters first
   const filteredByFilters = useMemo(() => {
     return categoryProducts.filter(product => {
       if (selectedSubCategories.length > 0 && !selectedSubCategories.includes(product.subCategory)) {
@@ -97,7 +91,6 @@ const CategoryListing = () => {
     });
   }, [categoryProducts, selectedSubCategories, selectedCollections, priceRange]);
 
-  // Then apply sorting
   const filteredProducts = useMemo(() => {
     const productsCopy = [...filteredByFilters];
     
@@ -122,27 +115,21 @@ const CategoryListing = () => {
   const handleShopNow = (e: React.MouseEvent, productToAdd: any) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Shop Now clicked for product:', productToAdd?.id, productToAdd?.name);
-    
     if (productToAdd && productToAdd.id) {
       addToCart(productToAdd, 1, productToAdd.variants?.[0] || 'default');
       setToast({ show: true, message: `${productToAdd.name} added to cart` });
       setTimeout(() => setToast({ show: false, message: '' }), 2000);
-    } else {
-      console.error('Invalid product passed to handleShopNow:', productToAdd);
     }
   };
 
   if (productsLoading || categoriesLoading) {
     return (
       <div className="container-custom py-10">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-48 mb-8"></div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-gray-200 rounded-xl aspect-3/4"></div>
-            ))}
-          </div>
+        <div className="shimmer rounded h-8 w-48 mb-8"></div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="shimmer rounded-xl aspect-3/4"></div>
+          ))}
         </div>
       </div>
     );
@@ -158,9 +145,7 @@ const CategoryListing = () => {
     );
   }
 
-  // Debug fallback - helps identify mismatches between category name and product categories
   if (!productsLoading && category && categoryProducts.length === 0) {
-    // Get all unique product categories to help debug
     const allProductCategories = [...new Set(products.map(p => p.category))];
     
     return (
@@ -190,7 +175,6 @@ const CategoryListing = () => {
         onClose={() => setToast({ show: false, message: '' })}
       />
 
-      {/* Breadcrumbs */}
       <nav className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-text-secondary mb-8">
         <Link to="/" className="hover:text-accent">Home</Link>
         <ChevronRight size={10} />
@@ -198,8 +182,13 @@ const CategoryListing = () => {
       </nav>
 
       <div className="flex flex-col lg:flex-row gap-10">
-        {/* Desktop Filters Sidebar */}
-        <aside className="lg:w-64 shrink-0 space-y-8 hidden lg:block">
+        {/* Desktop Filters Sidebar with Animation */}
+        <motion.aside 
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className="lg:w-64 shrink-0 space-y-8 hidden lg:block"
+        >
           <div>
             <h3 className="font-heading text-xl font-bold text-primary border-b border-gray-100 pb-2 mb-4">Filter By</h3>
             
@@ -259,11 +248,9 @@ const CategoryListing = () => {
               </div>
             </div>
           </div>
-        </aside>
+        </motion.aside>
 
-        {/* Main Content */}
         <main className="flex-grow">
-          {/* Header and Sorting */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
               <h1 className="text-3xl font-heading font-bold text-primary">{category.name}</h1>
@@ -275,7 +262,7 @@ const CategoryListing = () => {
             <div className="flex items-center gap-4 w-full sm:w-auto">
               <button 
                 onClick={() => setIsMobileFiltersOpen(true)}
-                className="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-btn text-sm font-medium"
+                className="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-btn text-sm font-medium active:scale-95"
               >
                 <Filter size={16} /> Filters
               </button>
@@ -295,13 +282,12 @@ const CategoryListing = () => {
             </div>
           </div>
 
-          {/* Active Filters Chips */}
           {(selectedSubCategories.length > 0 || selectedCollections.length > 0 || priceRange < 10000) && (
             <div className="flex flex-wrap gap-2 mb-8">
               {selectedSubCategories.map(sub => (
                 <span key={sub} className="bg-white border border-gray-200 px-3 py-1 rounded-chip text-[10px] font-bold text-primary flex items-center gap-2">
                   {sub} 
-                  <button onClick={() => toggleSubCategory(sub)}>
+                  <button onClick={() => toggleSubCategory(sub)} className="hover:scale-110">
                     <X size={10} />
                   </button>
                 </span>
@@ -309,7 +295,7 @@ const CategoryListing = () => {
               {selectedCollections.map(col => (
                 <span key={col} className="bg-white border border-gray-200 px-3 py-1 rounded-chip text-[10px] font-bold text-primary flex items-center gap-2">
                   {col}
-                  <button onClick={() => toggleCollection(col)}>
+                  <button onClick={() => toggleCollection(col)} className="hover:scale-110">
                     <X size={10} />
                   </button>
                 </span>
@@ -317,7 +303,7 @@ const CategoryListing = () => {
               {priceRange < 10000 && (
                 <span className="bg-white border border-gray-200 px-3 py-1 rounded-chip text-[10px] font-bold text-primary flex items-center gap-2">
                   Under ₹{priceRange.toLocaleString()}
-                  <button onClick={() => setPriceRange(10000)}>
+                  <button onClick={() => setPriceRange(10000)} className="hover:scale-110">
                     <X size={10} />
                   </button>
                 </span>
@@ -328,7 +314,6 @@ const CategoryListing = () => {
             </div>
           )}
 
-          {/* Products Grid */}
           {filteredProducts.length === 0 ? (
             <div className="text-center py-20">
               <ShoppingBag size={48} className="mx-auto text-text-secondary mb-4" />
@@ -356,7 +341,7 @@ const CategoryListing = () => {
           <div className="bg-white w-full max-h-[80vh] overflow-y-auto rounded-t-2xl animate-in slide-in-from-bottom-4 duration-300">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white">
               <h3 className="font-heading text-xl font-bold text-primary">Filters</h3>
-              <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2">
+              <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2 hover:bg-gray-100 rounded-full active:scale-95">
                 <X size={20} />
               </button>
             </div>
@@ -416,7 +401,7 @@ const CategoryListing = () => {
             <div className="p-6 border-t border-gray-100 sticky bottom-0 bg-white">
               <button 
                 onClick={() => setIsMobileFiltersOpen(false)} 
-                className="btn-primary w-full"
+                className="btn-primary w-full active:scale-95"
               >
                 Apply Filters ({filteredProducts.length} items)
               </button>

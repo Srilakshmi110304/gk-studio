@@ -1,13 +1,16 @@
 // pages/Account.tsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { User, MapPin, Lock, ShoppingBag, Heart, ChevronRight, Edit2, Trash2, Plus, ArrowRight, LogOut } from 'lucide-react';
+import { User, MapPin, Lock, ShoppingBag, Heart, Eye, ChevronRight, Edit2, Trash2, Plus, ArrowRight, LogOut } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useWishlist } from '../Context/WishlistContext';
 import { useAuth } from '../Context/AuthContext';
 import { useOrders } from '../Context/OrdersContext';
+import { useCart } from '../Context/CartContext';
+import { useRecentlyViewed } from '../components/hooks/useRecentlyViewed';
 import { formatPrice } from '../lib/utils';
 import { supabase } from '../lib/supabase';
+import { Toast } from '../components/ui/Toast';
 
 interface Address {
   id: string;
@@ -24,7 +27,10 @@ const Account = () => {
   const { user, signOut } = useAuth();
   const { wishlistItems } = useWishlist();
   const { orders, loading: ordersLoading, cancelOrder } = useOrders();
-  const [activeTab, setActiveTab] = useState<'profile' | 'addresses' | 'password' | 'orders' | 'wishlist'>('profile');
+  const { addToCart } = useCart();
+  const { items: recentlyViewedItems, loading: recentlyViewedLoading } = useRecentlyViewed();
+  const [toast, setToast] = useState({ show: false, message: '' });
+  const [activeTab, setActiveTab] = useState<'profile' | 'addresses' | 'password' | 'orders' | 'wishlist' | 'recently-viewed'>('profile');
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -158,14 +164,12 @@ const Account = () => {
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check if user exists before proceeding
     if (!user) {
       alert('Please login to update your profile');
       return;
     }
     
     try {
-      // Check if profile exists first
       const { data: existingProfile } = await supabase
         .from('profiles')
         .select('id')
@@ -173,7 +177,6 @@ const Account = () => {
         .maybeSingle();
       
       if (existingProfile) {
-        // Update existing profile
         await supabase
           .from('profiles')
           .update({
@@ -185,7 +188,6 @@ const Account = () => {
           })
           .eq('id', user.id);
       } else {
-        // Insert new profile
         await supabase
           .from('profiles')
           .insert({
@@ -220,7 +222,6 @@ const Account = () => {
 
     try {
       if (editingAddress) {
-        // Update existing address
         await supabase
           .from('addresses')
           .update({
@@ -242,7 +243,6 @@ const Account = () => {
             .neq('id', editingAddress.id);
         }
       } else {
-        // Add new address
         const { data } = await supabase
           .from('addresses')
           .insert({
@@ -371,7 +371,8 @@ const Account = () => {
     { id: 'addresses' as const, label: 'Address Book', icon: MapPin },
     { id: 'password' as const, label: 'Change Password', icon: Lock },
     { id: 'orders' as const, label: 'My Orders', icon: ShoppingBag },
-    { id: 'wishlist' as const, label: 'Wishlist', icon: Heart }
+    { id: 'wishlist' as const, label: 'Wishlist', icon: Heart },
+    { id: 'recently-viewed' as const, label: 'Recently Viewed', icon: Eye }
   ];
 
   // Show loading state while checking auth or loading data
@@ -406,6 +407,11 @@ const Account = () => {
 
   return (
     <div className="bg-page-bg min-h-screen py-10">
+      <Toast
+        message={toast.message}
+        isVisible={toast.show}
+        onClose={() => setToast({ show: false, message: '' })}
+      />
       <div className="container-custom">
         <nav className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-text-secondary mb-8">
           <Link to="/" className="hover:text-accent">Home</Link>
@@ -762,6 +768,87 @@ const Account = () => {
                       <Link to="/wishlist" className="flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-accent text-sm font-bold">
                         +{wishlistItems.length - 3} more
                       </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Recently Viewed Tab */}
+            {activeTab === 'recently-viewed' && (
+              <div className="bg-white rounded-card shadow-sm border border-gray-100 p-6 md:p-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-heading font-bold text-primary">Recently Viewed</h2>
+                  <Link 
+                    to="/recently-viewed" 
+                    className="text-accent text-sm font-bold uppercase tracking-wider flex items-center gap-1 hover:gap-2 transition-all"
+                  >
+                    View All <ArrowRight size={14} />
+                  </Link>
+                </div>
+                
+                {recentlyViewedLoading ? (
+                  <div className="space-y-4">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="flex gap-4 animate-pulse">
+                        <div className="w-20 h-24 bg-gray-200 rounded"></div>
+                        <div className="flex-1">
+                          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : recentlyViewedItems.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Eye size={48} className="mx-auto text-text-secondary mb-4" />
+                    <p className="text-text-secondary">No recently viewed items yet.</p>
+                    <Link to="/" className="btn-primary inline-block mt-4">Explore Products</Link>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {recentlyViewedItems.slice(0, 3).map(product => (
+                      <div key={product.id} className="flex gap-4 p-3 border border-gray-100 rounded-lg hover:shadow-md transition-all">
+                        <Link to={`/product/${product.id}`}>
+                          <img src={product.images?.[0]} alt={product.name} className="w-20 h-24 object-cover rounded" />
+                        </Link>
+                        <div className="flex-1">
+                          <Link to={`/product/${product.id}`}>
+                            <h4 className="text-sm font-bold text-primary line-clamp-1 hover:text-pink-500 transition-colors">
+                              {product.name}
+                            </h4>
+                          </Link>
+                          <p className="text-xs text-text-secondary">{product.collection}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-sm font-bold text-pink-600">{formatPrice(product.offerPrice)}</span>
+                            {product.price > product.offerPrice && (
+                              <span className="text-xs text-text-secondary line-through">{formatPrice(product.price)}</span>
+                            )}
+                          </div>
+                          <p className="text-xs text-text-secondary mt-1">
+                            Viewed: {product.viewed_at ? new Date(product.viewed_at).toLocaleDateString() : 'Recently'}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            const variant = product.variants?.[0] || 'default';
+                            addToCart(product, 1, variant);
+                            setToast({ show: true, message: `${product.name} added to cart` });
+                            setTimeout(() => setToast({ show: false, message: '' }), 2000);
+                          }}
+                          className="btn-secondary py-2 px-4 text-xs flex items-center gap-1"
+                        >
+                          <ShoppingBag size={12} />
+                          Buy Again
+                        </button>
+                      </div>
+                    ))}
+                    {recentlyViewedItems.length > 3 && (
+                      <div className="text-center pt-2">
+                        <Link to="/recently-viewed" className="text-accent text-sm font-bold uppercase tracking-wider hover:underline">
+                          +{recentlyViewedItems.length - 3} more items
+                        </Link>
+                      </div>
                     )}
                   </div>
                 )}
